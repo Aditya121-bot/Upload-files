@@ -1,0 +1,155 @@
+ <!DOCTYPE html>
+<html>
+<head>
+<title>Firebase File Upload</title>
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1, maximum-scale=1"
+/>
+</head>
+<body>
+<div>
+<h1>Upload Files <h4>& Saved</h4></h1><br />
+<input type="file" id="files" multiple /><br /><br />
+<div id="b">
+<button id="send">Upload</button>
+<p id="uploading"><h5>Uploading...</h5></p>
+<progress value="0" max="100" id="progress"></progress>
+</div>
+</div>
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+         https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+
+<script>
+// Your web app's Firebase configuration
+var firebaseConfig = {
+  apiKey: "AIzaSyAck2mrryCRV7_NWb2qS7xYWWu9Lg_j-X0",
+    authDomain: "aditya-a96ba.firebaseapp.com",
+    databaseURL: "https://aditya-a96ba-default-rtdb.firebaseio.com",
+    projectId: "aditya-a96ba",
+    storageBucket: "aditya-a96ba.appspot.com",
+    messagingSenderId: "479178252142",
+    appId: "1:479178252142:web:87f9c3a544b76f5ea8ab7f",
+    measurementId: "G-SP1EBY2B86"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+</script>
+
+<script>
+var files = [];
+document.getElementById("files").addEventListener("change", function(e) {
+  files = e.target.files;
+  for (let i = 0; i < files.length; i++) {
+    console.log(files[i]);
+  }
+});
+
+document.getElementById("send").addEventListener("click", function() {
+  //checks if files are selected
+  if (files.length != 0) {
+    //Loops through all the selected files
+    for (let i = 0; i < files.length; i++) {
+      //create a storage reference
+      var storage = firebase.storage().ref(files[i].name);
+
+      //upload file
+      var upload = storage.put(files[i]);
+
+      //update progress bar
+      upload.on(
+        "state_changed",
+        function progress(snapshot) {
+          var percentage =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          document.getElementById("progress").value = percentage;
+        },
+
+        function error() {
+          alert("error uploading file");
+        },
+
+        function complete() {
+          document.getElementById(
+            "uploading"
+          ).innerHTML += `${files[i].name} upoaded <br />`;
+        }
+      );
+    }
+  } else {
+    alert("No file chosen");
+  }
+});
+
+function getFileUrl(filename) {
+  //create a storage reference
+  var storage = firebase.storage().ref(filename);
+
+  //get file url
+  storage
+    .getDownloadURL()
+    .then(function(url) {
+      console.log(url);
+    })
+    .catch(function(error) {
+      console.log("error encountered");
+    });
+}
+</script>
+<style>
+    body {
+    color:black;
+}
+h1,h4{
+    
+    text-align:center ;
+}
+input[type="file"]{
+    
+    align-items:center ;
+    text-align:center ;
+    display:flex;
+    color:red;
+    font-size:18px;
+    font-weight:bold;
+    border:1px solid pink;
+    width:98%;
+    background-color:pink;
+    border-radius:10px;
+}
+input[type="file"] {
+    display: bloc
+}
+progress {
+    
+    border:1px solid blue;
+    height:30px;width:100%;
+    background-color:green;
+    
+}
+#b{
+    align-items:center ;
+    text-align:center ;
+}
+button{
+    border:1px solid blue;
+    height:35px;width:100px;
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+    font-family:fantasy;
+    border-radius:5px;
+    background-color:blue;
+}
+
+</style>
+</body>
+</html>
